@@ -39,7 +39,7 @@ git pull -s recursive -X theirs upstream master
 - Remove the original wsgi.py, and set the WSGI application to django's built in WSGI application.
 ```
 rm wsgi.py
-rhc env set OPENSHIFT_PYTHON_WSGI_APPLICATION=mysite/wsgi.py --app django
+rhc env set OPENSHIFT_PYTHON_WSGI_APPLICATION=app/wsgi.py --app django
 ```
 - Push the repo upstream
 ```
