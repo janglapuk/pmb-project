@@ -106,8 +106,8 @@
 			</div>
 			<div id="navbarCollapse" class="collapse navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li class="nop{% block nav_active_beranda %}{% endblock %}"></i><a href="/register/">Beranda</a></li>
-					<li class="nop{% block nav_active_pmb %}{% endblock %}"><a href="/register/pmb">PMB</a></li>
+					<li class="nop{% block nav_active_beranda %}{% endblock %}"></i><a href="{% url 'reg_beranda' %}">Beranda</a></li>
+					<li class="nop{% block nav_active_pmb %}{% endblock %}"><a href="{% url 'reg_pmb' %}">PMB</a></li>
 					<li class="dropdown{% block nav_active_confirm_verify %}{% endblock %}">
 						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Konfirmasi & Verifikasi <b class="caret"></b></a>
 						<ul role="menu" class="dropdown-menu">

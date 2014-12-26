@@ -9,10 +9,6 @@
 
             $(document).ready(function() {
 
-                /*
-                 * Author   : Thami Rusdi Agus (http://janglapuk.github.io)
-                 * Desc     : Mengubah combobox secara dinamis berbasis data JSON
-                 */
                 function updateCombo(selector, id, key)
                 {
                     if(selector.length > 0) {
@@ -43,8 +39,6 @@
                 }
 
                 /*
-                 * Author   : Thami Rusdi Agus (http://janglapuk.github.io)
-                 * Desc     : Memeriksa data apakah sudah ada dalam database dengan fungsi synchronously ajax
                  * Ref      : http://stackoverflow.com/questions/15282821/getjson-does-not-honor-asyncfalse
                  */
                 function checkInputExist(selector, key, data_id)
@@ -115,10 +109,6 @@
                     return true;
                 }
 
-                /*
-                 * Author   : Thami Rusdi Agus (http://janglapuk.github.io)
-                 * Desc     : Reset combo items
-                 */
                 function resetComboItems(selector)
                 {
                     if($(selector).length > 0) {
@@ -221,7 +211,7 @@
                         <div class="form-group has-feedback">
                             <label for="nama" class="col-sm-2 control-label">Nama</label>
                             <div class="col-sm-10">
-                                <input type="text" name="nama" class="form-control" id="nama" placeholder="Nama lengkap" required="" maxlength="50" value="{% if dummyuser %}Thami Rusdi Agus{% endif %}" pattern=".{3,50}"/>
+                                <input type="text" name="nama" class="form-control" id="nama" placeholder="Nama lengkap" required="" maxlength="50" value="" pattern=".{3,50}"/>
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -229,7 +219,7 @@
                         <div class="form-group has-feedback">
                             <label for="alamat" class="col-sm-2 control-label">Alamat</label>
                             <div class="col-sm-10">
-                                <textarea name="alamat" id="alamat" cols="" rows="" class="form-control" required="" maxlength="250">{% if dummyuser %}Jl. Pada Elo RT. 2 No. 7{% endif %}</textarea>
+                                <textarea name="alamat" id="alamat" cols="" rows="" class="form-control" required="" maxlength="250"></textarea>
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
                             </div>
                         </div>
@@ -237,7 +227,7 @@
                         <div class="form-group has-feedback">
                             <label for="kota" class="col-sm-2 control-label">Kota</label>
                             <div class="col-sm-10">
-                                <input type="text" name="kota" class="form-control" id="kota" placeholder="Kota" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Samarinda{% endif %}">
+                                <input type="text" name="kota" class="form-control" id="kota" placeholder="Kota" required="" autocomplete="off" maxlength="30" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -245,7 +235,7 @@
                         <div class="form-group has-feedback">
                             <label for="provinsi" class="col-sm-2 control-label">Provinsi</label>
                             <div class="col-sm-10">
-                                <input type="text" name="provinsi" class="form-control" id="provinsi" placeholder="Provinsi" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Kalimantan Timur{% endif %}">
+                                <input type="text" name="provinsi" class="form-control" id="provinsi" placeholder="Provinsi" required="" autocomplete="off" maxlength="30" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -253,7 +243,7 @@
                         <div id="group-identitas" class="form-group has-feedback">
                             <label for="identitas" class="col-sm-2 control-label">No. Identitas</label>
                             <div class="col-sm-10">
-                                <input type="text" name="identitas" class="form-control" id="identitas" placeholder="Nomor identitas KTP/SIM" required="" maxlength="20" value="{% if dummyuser %}6472051908850006{% endif %}">
+                                <input type="text" name="identitas" class="form-control" id="identitas" placeholder="Nomor identitas KTP/SIM" required="" maxlength="20" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                                 <span id="error-identitas" class="label label-danger" style="display: none;"></span>
                             </div>
@@ -264,7 +254,7 @@
                             <div class="col-sm-10">
                                 <div class="radio-inline">
                                     <label>
-                                        <input id="jenkel-l" name="jenkel" value="L" type="radio" required=""{% if dummyuser %} checked=""{% endif %}> Laki-laki
+                                        <input id="jenkel-l" name="jenkel" value="L" type="radio" required="" checked> Laki-laki
                                     </label>
                                 </div>
                                 <div class="radio-inline">
@@ -279,7 +269,7 @@
                             <label class="col-sm-2 control-label">Agama</label>
                             <div class="col-sm-10">
                                 <select class="form-control" name="pilih-agama" required="">
-                                    <option value="0"{% if not dummyuser %} selected=""{% endif %}>---</option>
+                                    <option value="0">---</option>
                                     {% for agama in db_agama %}
                                     <option value="{{ agama.id }}"{% if forloop.first %} selected=""{% endif %}>{{ agama.nama }}</option>
                                     {% endfor %}
@@ -290,7 +280,7 @@
                         <div class="form-group has-feedback">
                             <label for="tempat-lahir" class="col-sm-2 control-label">Tempat Lahir</label>
                             <div class="col-sm-10">
-                                <input type="text" name="tempat-lahir" class="form-control" id="tempat-lahir" placeholder="Tempat lahir" required="" maxlength="20" value="{% if dummyuser %}Samarinda{% endif %}">
+                                <input type="text" name="tempat-lahir" class="form-control" id="tempat-lahir" placeholder="Tempat lahir" required="" maxlength="20" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -298,7 +288,7 @@
                         <div class="form-group has-feedback">
                             <label for="tgl-lahir" class="col-sm-2 control-label">Tanggal Lahir</label>
                             <div class="col-sm-10">
-                                <input type="text" name="tgl-lahir" class="form-control" id="tgl-lahir" placeholder="yyyy-mm-dd" required="" value="{% if dummyuser %}1985-08-19{% endif %}">
+                                <input type="text" name="tgl-lahir" class="form-control" id="tgl-lahir" placeholder="yyyy-mm-dd" required="" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -312,7 +302,7 @@
                                     <option value="2">AB</option>
                                     <option value="3">AB-</option>
                                     <option value="4">AB+</option>
-                                    <option value="5"{% if dummyuser %} selected=""{% endif %}>O</option>
+                                    <option value="5">O</option>
                                     <option value="6">Lainnya</option>
                                 </select>
                             </div>
@@ -321,14 +311,14 @@
                         <div class="form-group">
                             <label for="nomor-telp" class="col-sm-2 control-label">No. Telp.</label>
                             <div class="col-sm-10">
-                                <input type="text" name="nomor-telp" class="form-control" id="nomor-telp" placeholder="Nomor telepon (rumah/kantor)" maxlength="15" value="{% if dummyuser %}0541-7270021{% endif %}">
+                                <input type="text" name="nomor-telp" class="form-control" id="nomor-telp" placeholder="Nomor telepon (rumah/kantor)" maxlength="15" value="">
                             </div>
                         </div>
 
                         <div class="form-group has-feedback">
                             <label for="nomor-hp" class="col-sm-2 control-label">No. HP.</label>
                             <div class="col-sm-10">
-                                <input type="text" name="nomor-hp" class="form-control" id="nomor-hp" placeholder="Nomor handphone" required="" maxlength="15" value="{% if dummyuser %}085347892345{% endif %}">
+                                <input type="text" name="nomor-hp" class="form-control" id="nomor-hp" placeholder="Nomor handphone" required="" maxlength="15" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -338,7 +328,7 @@
                             <div class="col-sm-10">
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon">@</span>
-                                    <input type="email" name="email" id="email" class="form-control" placeholder="Alamat e-mail" value="{% if dummyuser %}trusdi.agus@gmail.com{% endif %}">
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="Alamat e-mail" value="">
                                     <span class="nop padding-only"></span>
                                     <span id="error-email" class="label label-danger" style="display: none;"></span>
                                 </div>
@@ -362,7 +352,7 @@
                         <div class="form-group has-feedback">
                             <label for="ortu-nama-ayah" class="col-sm-2 control-label">Nama Ayah</label>
                             <div class="col-sm-10">
-                                <input type="text" name="ortu-nama-ayah" class="form-control" id="ortu-nama-ayah" placeholder="Nama Ayah" required="" maxlength="50" value="{% if dummyuser %}M. Thamrin{% endif %}">
+                                <input type="text" name="ortu-nama-ayah" class="form-control" id="ortu-nama-ayah" placeholder="Nama Ayah" required="" maxlength="50" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -370,7 +360,7 @@
                         <div class="form-group has-feedback">
                             <label for="ortu-nama-ibu" class="col-sm-2 control-label">Nama Ibu</label>
                             <div class="col-sm-10">
-                                <input type="text" name="ortu-nama-ibu" class="form-control" id="ortu-nama-ibu" placeholder="Nama Ibu" required="" maxlength="50" value="{% if dummyuser %}Rosita{% endif %}">
+                                <input type="text" name="ortu-nama-ibu" class="form-control" id="ortu-nama-ibu" placeholder="Nama Ibu" required="" maxlength="50" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -378,14 +368,14 @@
                         <div class="form-group">
                             <label for="ortu-nama-wali" class="col-sm-2 control-label">Nama Wali</label>
                             <div class="col-sm-10">
-                                <input type="text" name="ortu-nama-wali" class="form-control" id="ortu-nama-wali" placeholder="Nama Wali" maxlength="50" value="{% if dummyuser %}M. Syafe'i{% endif %}">
+                                <input type="text" name="ortu-nama-wali" class="form-control" id="ortu-nama-wali" placeholder="Nama Wali" maxlength="50" value="">
                             </div>
                         </div>
 
                         <div class="form-group has-feedback">
                             <label for="ortu-alamat" class="col-sm-2 control-label">Alamat</label>
                             <div class="col-sm-10">
-                                <textarea name="ortu-alamat" id="ortu-alamat" cols="" rows="" class="form-control" required="" maxlength="250">{% if dummyuser %}Jl. A. Azis Samad{% endif %}</textarea>
+                                <textarea name="ortu-alamat" id="ortu-alamat" cols="" rows="" class="form-control" required="" maxlength="250"></textarea>
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -393,7 +383,7 @@
                         <div class="form-group has-feedback">
                             <label for="ortu-pekerjaan" class="col-sm-2 control-label">Pekerjaan</label>
                             <div class="col-sm-10">
-                                <input type="text" name="ortu-pekerjaan" class="form-control" id="ortu-pekerjaan" placeholder="Pekerjaan" maxlength="20" value="{% if dummyuser %}Wiraswasta{% endif %}">
+                                <input type="text" name="ortu-pekerjaan" class="form-control" id="ortu-pekerjaan" placeholder="Pekerjaan" maxlength="20" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -401,7 +391,7 @@
                         <div class="form-group has-feedback">
                             <label for="ortu-telepon" class="col-sm-2 control-label">Telepon</label>
                             <div class="col-sm-10">
-                                <input type="text" name="ortu-telepon" class="form-control" id="ortu-telepon" placeholder="Telepon / handphone" maxlength="15" value="{% if dummyuser %}081347892345{% endif %}">
+                                <input type="text" name="ortu-telepon" class="form-control" id="ortu-telepon" placeholder="Telepon / handphone" maxlength="15" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -411,7 +401,7 @@
                             <div class="col-sm-10">
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-addon">@</span>
-                                    <input type="email" name="ortu-email" class="form-control" id="ortu-email" placeholder="Alamat e-mail orang tua/wali" value="{% if dummyuser %}coba@aja.com{% endif %}">
+                                    <input type="email" name="ortu-email" class="form-control" id="ortu-email" placeholder="Alamat e-mail orang tua/wali" value="">
                                 </div>
                             </div>
                         </div>
@@ -435,7 +425,7 @@
                                 <select class="form-control" name="pend-akhir" required="">
                                     <option value="0">---</option>
                                     <option value="smu">Sekolah Menengah Umum (SMU)</option>
-                                    <option value="smk"{% if dummyuser %} selected=""{% endif %}>Sekolah Menengah Kejuruan (SMK)</option>
+                                    <option value="smk">Sekolah Menengah Kejuruan (SMK)</option>
                                     <option value="ma">Madrasah Aliyah (MA)</option>
                                     <option value="etc">Lainnya</option>
                                 </select>
@@ -445,7 +435,7 @@
                         <div class="form-group has-feedback">
                             <label for="pend-nama-sekolah" class="col-sm-2 control-label">Nama Sekolah</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pend-nama-sekolah" class="form-control" id="pend-nama-sekolah" placeholder="Nama sekolah" required="" maxlength="50" value="{% if dummyuser %}SMK-TI Airlangga Samarinda{% endif %}">
+                                <input type="text" name="pend-nama-sekolah" class="form-control" id="pend-nama-sekolah" placeholder="Nama sekolah" required="" maxlength="50" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -453,7 +443,7 @@
                         <div class="form-group has-feedback">
                             <label for="pend-alamat" class="col-sm-2 control-label">Alamat Sekolah</label>
                             <div class="col-sm-10">
-                                <textarea name="pend-alamat" id="pend-alamat" cols="" rows="" class="form-control" required="" maxlength="250">{% if dummyuser %}Jl. Pahlawan No. 2A{% endif %}</textarea>
+                                <textarea name="pend-alamat" id="pend-alamat" cols="" rows="" class="form-control" required="" maxlength="250"></textarea>
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -461,7 +451,7 @@
                         <div class="form-group has-feedback">
                             <label for="pend-kota-sekolah" class="col-sm-2 control-label">Kota</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pend-kota-sekolah" class="form-control" id="pend-kota-sekolah" placeholder="Kota" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Samarinda{% endif %}">
+                                <input type="text" name="pend-kota-sekolah" class="form-control" id="pend-kota-sekolah" placeholder="Kota" required="" autocomplete="off" maxlength="30" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -469,7 +459,7 @@
                         <div class="form-group has-feedback">
                             <label for="pend-prov-sekolah" class="col-sm-2 control-label">Provinsi</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pend-prov-sekolah" class="form-control" id="pend-prov-sekolah" placeholder="Provinsi" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Kalimantan Timur{% endif %}">
+                                <input type="text" name="pend-prov-sekolah" class="form-control" id="pend-prov-sekolah" placeholder="Provinsi" required="" autocomplete="off" maxlength="30" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -477,7 +467,7 @@
                         <div class="form-group has-feedback">
                             <label for="pend-jurusan" class="col-sm-2 control-label">Jurusan</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pend-jurusan" class="form-control" id="pend-jurusan" placeholder="Jurusan" required="" maxlength="50" value="{% if dummyuser %}Teknik Informatika{% endif %}">
+                                <input type="text" name="pend-jurusan" class="form-control" id="pend-jurusan" placeholder="Jurusan" required="" maxlength="50" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -485,7 +475,7 @@
                         <div class="form-group has-feedback">
                             <label for="pend-tahun-lulus" class="col-sm-2 control-label">Tahun Lulus</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pend-tahun-lulus" class="form-control" id="pend-tahun-lulus" placeholder="Tahun kelulusan" required="" maxlength="4" value="{% if dummyuser %}2004{% endif %}">
+                                <input type="text" name="pend-tahun-lulus" class="form-control" id="pend-tahun-lulus" placeholder="Tahun kelulusan" required="" maxlength="4" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                             </div>
                         </div>
@@ -493,7 +483,7 @@
                         <div id="group-ijazah" class="form-group has-feedback">
                             <label for="ijazah" class="col-sm-2 control-label">No. Ijazah</label>
                             <div class="col-sm-10">
-                                <input type="text" name="pend-no-ijazah" class="form-control" id="ijazah" placeholder="Nomor ijazah" required="" maxlength="50" value="{% if dummyuser %}6472051908850006{% endif %}">
+                                <input type="text" name="pend-no-ijazah" class="form-control" id="ijazah" placeholder="Nomor ijazah" required="" maxlength="50" value="">
                                 <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
                                 <span id="error-ijazah" class="label label-danger" style="display: none;"></span>
                             </div>
@@ -555,7 +545,7 @@
                             <div class="col-sm-offset-0 col-sm-12">
                                 <div class="checkbox">
                                     <label>
-                                        <input name="checkbox-setuju" id="checkbox-setuju" type="checkbox"{% if dummyuser %} checked=""{% endif %}>
+                                        <input name="checkbox-setuju" id="checkbox-setuju" type="checkbox">
                                         Saya menyatakan bahwa informasi yang saya berikan benar dan sesuai.
                                     </label>
                                 </div>

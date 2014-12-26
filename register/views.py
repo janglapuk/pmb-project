@@ -27,7 +27,7 @@ def beranda(request):
 
 
 def pmb(request):
-    resp = {'dummyuser': True}
+    resp = {}
 
     resp['db_agama'] = Agama.objects.all().order_by('id')
     resp['db_prodi'] = ProgramStudi.objects.all().order_by('id')
@@ -345,8 +345,6 @@ def confirm_submit(request, key_id):
 
                 obj_sp = Verifikasi.objects.filter(kode_verifikasi__contains=kv2.lower())[0]
                 obj_rektujuan = Pengaturan.objects.get(id=int(rektujuan2))
-
-                #image_content = ContentFile(request.FILES['buktitrf'].read())
 
                 form = PembayaranForm(request.POST, request.FILES)
                 if form.is_valid():

@@ -6,48 +6,22 @@
         {% block main_content %}
         <div class="container">
             <div class="jumbotron">
-                <h1>Pre-UAS Project</h1>
+                <h1>Pra-UAS Project</h1>
                 <h3>"Manajemen Pendaftaran Mahasiswa Baru"</h3>
                 <p class="text-justify">Sebuah proyek <em>website</em> sederhana yang dikembangkan menggunakan <a href="https://djangoproject.com"><strong>Django</strong></a>,
                     <a href="https://jquery.org"><strong>jQuery</strong></a>, <a href="http://json.org"><strong>JSON</strong></a> dan <a href="https://getbootstrap.com"><strong>Bootstrap</strong></a>
                     (oleh <a href="https://www.twitter.com"><strong>Twitter</strong></a>) sebagai <em>front-end framework</em> untuk memanfaatkan fitur-fitur pada <a href="http://www.w3.org/TR/html5/">HTML5</a>
                     serta membentuk halaman situs yang <a href="http://en.wikipedia.org/wiki/Responsive_web_design"><em>responsive</em></a>.
                 </p>
-                <!--
                 <p>
-                    Saat ini yang sedang dikembangkan adalah <strong>Pendaftaran Mahasiswa Baru</strong> (laman <a href="{% url 'reg_pmb' %}">PMB</a>) dan
-                    <strong>Manajemen Pendaftaran Mahasiswa Baru</strong> (laman <a href="{% url 'adm_beranda' %}">Administrasi</a>)
+                    Kode sumber project ini dapat anda lihat pada laman <a href="https://github.com/janglapuk/pmb-project" target="_blank"><strong>GitHub</strong></a>.
                 </p>
 
-                <p>
-                    Kode sumber project ini dapat anda lihat pada laman <a href="https://github.com/janglapuk/spb-projects"><strong>GitHub</strong></a>.
-                </p>
-                -->
-                <!--
-                <p>
-                    Tujuan pembuatan project ini sebagai pra-syarat mengikuti Ujian Akhir Semester (pre-UAS) STMIK SPB Samarinda.
-                    Selain itu juga sebagai sarana belajar dan sebuah tantangan baru dalam dunia pemrograman website berbasis Python
-                    bagi kami yang baru mempelajari Python sebagai bahasa pemrograman yang direkomendasikan oleh STMIK SPB Samarinda.
-                </p>
-                -->
-                <p><a href="/register/tentang-project" class="btn btn-success btn-lg">Selengkapnya!</a></p>
+                <p><a href="{% url 'reg_help_about' %}" class="btn btn-success btn-lg">Selengkapnya!</a></p>
             </div>
 
-            <!--
-            <div class="row">
-                <div class="col-md-6">
-                    <h2>Tentang Proyek</h2>
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                    <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
-                </div>
-                <div class="col-md-6">
-                    <h2>Kode Sumber</h2>
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-                    <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
-                </div>
-            </div>
-            -->
         <hr />
+
         <footer>
             <p>© Tim Pengembang 2014</p>
         </footer>
