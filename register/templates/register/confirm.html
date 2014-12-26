@@ -1,0 +1,378 @@
+        {% extends 'register/base.html' %}
+
+        {% block title %}Konfirmasi Pembayaran{% endblock %}
+        {% block nav_active_confirm_verify %} active{% endblock %}
+
+        {% block extra_header %}
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var fnCekF1 = function() {
+                    if($('#rektujuan option:first').is(':selected')) {
+                        $('#rektujuan').focus();
+                        return false;
+                    }
+
+                    if($('#kv').val().length != 8) {
+                        $('#kv').focus();
+                        return false;
+                    }
+
+                    var jsonUrl = '{% url 'reg_pmb' %}' + 'json/check_kv/' + $('#kv').val() + '/';
+                    var kvNotExist = null;
+                    $.ajax({
+                        url: jsonUrl,
+                        dataType: 'json',
+                        async: false,
+                        success: function(response) {
+                            kvNotExist = response.error;
+                        }
+                    });
+
+                    if(kvNotExist) {
+                        $('#kv').focus();
+                        var errEl = $('#kv').next();
+                        var warnInfo = $('<small />').text('Kode verifikasi \'' + $('#kv').val() + '\' belum terdaftar!');
+                        $(errEl).html(warnInfo);
+                        return false;
+                    } else {
+                        var errEl = $('#kv').next();
+                        $(errEl).empty();
+                    }
+
+                    jsonUrl = '{% url 'reg_pmb' %}' + 'json/check_kv_reg/' + $('#kv').val() + '/';
+                    var kvExist = null;
+                    $.ajax({
+                        url: jsonUrl,
+                        dataType: 'json',
+                        async: false,
+                        success: function(response) {
+                            kvExist = response.error;
+                        }
+                    });
+
+                    if(kvExist) {
+                        $('#kv').focus();
+                        var errEl = $('#kv').next();
+                        var warnInfo = $('<small />').text('Kode verifikasi \'' + $('#kv').val() + '\' telah dikonfirmasi sebelumnya!');
+                        $(errEl).html(warnInfo);
+                        return false;
+                    } else {
+                        var errEl = $('#kv').next();
+                        $(errEl).empty();
+                    }
+
+                    if($('#pengirim').val().length < 3) {
+                        $('#pengirim').focus();
+                        return false;
+                    }
+
+                    if($('#norek').val().length < 5) {
+                        $('#norek').focus();
+                        return false;
+                    }
+
+                    if($('#bank').val().length < 3) {
+                        $('#bank').focus();
+                        return false;
+                    }
+
+                    if($('#cabang').val().length < 3) {
+                        $('#cabang').focus();
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                var fnCekF2 = function() {
+                    if($('#rektujuan2 option:first').is(':selected')) {
+                        $('#rektujuan2').focus();
+                        return false;
+                    }
+
+                    if($('#kv2').val().length != 8) {
+                        $('#kv2').focus();
+                        return false;
+                    }
+
+                    var jsonUrl = '{% url 'reg_pmb' %}' + 'json/check_kv/' + $('#kv2').val() + '/';
+                    var kvNotExist = null;
+                    $.ajax({
+                        url: jsonUrl,
+                        dataType: 'json',
+                        async: false,
+                        success: function(response) {
+                            kvNotExist = response.error;
+                        }
+                    });
+
+                    if(kvNotExist) {
+                        $('#kv2').focus();
+                        var errEl = $('#kv2').next();
+                        var warnInfo = $('<small />').text('Kode verifikasi \'' + $('#kv2').val() + '\' belum terdaftar!');
+                        $(errEl).html(warnInfo);
+                        return false;
+                    } else {
+                        var errEl = $('#kv2').next();
+                        $(errEl).empty();
+                    }
+
+                    jsonUrl = '{% url 'reg_pmb' %}' + 'json/check_kv_reg/' + $('#kv2').val() + '/';
+                    var kvExist = null;
+                    $.ajax({
+                        url: jsonUrl,
+                        dataType: 'json',
+                        async: false,
+                        success: function(response) {
+                            kvExist = response.error;
+                        }
+                    });
+
+                    if(kvExist) {
+                        $('#kv2').focus();
+                        var errEl = $('#kv2').next();
+                        var warnInfo = $('<small />').text('Kode verifikasi \'' + $('#kv2').val() + '\' telah dikonfirmasi sebelumnya!');
+                        $(errEl).html(warnInfo);
+                        return false;
+                    } else {
+                        var errEl = $('#kv2').next();
+                        $(errEl).empty();
+                    }
+
+                    if($('#norek2').val().length < 5) {
+                        $('#norek2').focus();
+                        return false;
+                    }
+
+                    if($('#bank2').val().length < 3) {
+                        $('#bank2').focus();
+                        return false;
+                    }
+
+                    if($('#buktitrf').val().length < 3) {
+                        $('#buktitrf').focus();
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                $('#formtrf').submit(function(event) {
+                    var check = fnCekF1();
+
+                    if(!check)
+                        alert('Isian transfer anda belum lengkap!');
+
+                    return check;
+                });
+
+                $('#formibank').submit(function(event) {
+                    var check = fnCekF2();
+
+                    if(!check)
+                        alert('Isian transfer anda belum lengkap!');
+
+                    return check;
+                });
+
+                /*
+                 * Menyimpan status tab yang terakhir dibuka
+                 * http://stackoverflow.com/a/10524697
+                 */
+                $(function() {
+                    //for bootstrap 3 use 'shown.bs.tab' instead of 'shown' in the next line
+                    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                        //save the latest tab; use cookies if you like 'em better:
+                        sessionStorage.setItem('confirmLastTab', $(e.target).attr('id'));
+                    });
+
+                    //go to the latest tab, if it exists:
+                    var lastTab = sessionStorage.getItem('confirmLastTab');
+                    if (lastTab) {
+                        $('#'+lastTab).tab('show');
+                    }
+                });
+            });
+        </script>
+        {% endblock %}
+
+        {% block main_content %}
+        <div class="container">
+            {% if error %}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <strong>Error: </strong>{% autoescape on %}{{ error_message }}{% endautoescape %}
+            </div>
+            {% endif %}
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title" id="data-pribadi">Konfirmasi Pembayaran</h3>
+                </div>
+                <div class="panel-body">
+                    <p>Silakan pilih metode pembayaran yang telah anda lakukan:</p>
+
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a id="tab-transfer" href="#transfer" data-toggle="tab" aria-expanded="true">Transfer</a></li>
+                        <li><a id="tab-ibank" href="#atb-ibank" data-toggle="tab" aria-expanded="false">ATM/iBank</a></li>
+                        <li><a id="tab-onsite" href="#onsite" data-toggle="tab" aria-expanded="false">Bayar Ditempat</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="transfer">
+                            <form action="{% url 'reg_confirm_submit' 'transfer' %}" id="formtrf" method="post" role="form">
+
+                                {% csrf_token %}
+
+                                <div class="panel-body form-horizontal">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Rekening Tujuan</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control" id="rektujuan" name="rektujuan" required="">
+                                                <option value="0" selected>---</option>
+                                                {% for bank in banks %}
+                                                <option value="{{ bank.id }}">{{ bank.nama }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="kv" class="col-sm-2 control-label">Kode Verifikasi</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="kv" class="form-control" id="kv" placeholder="Kode verifikasi, misal: 1A2B3C4D" required="" maxlength="8" value="" pattern=".{8}"/>
+                                            <span style="color: red;"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="pengirim" class="col-sm-2 control-label">Pengirim</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="pengirim" class="form-control" id="pengirim" placeholder="Nama pengirim" required="" maxlength="50" value="" pattern=".{3,50}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="pengirim" class="col-sm-2 control-label">Rekening</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="norek" class="form-control" id="norek" placeholder="Nomor rekening" required="" maxlength="50" value="" pattern=".{3,50}"/>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label for="bank" class="col-sm-2 control-label">Dari Bank</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="bank" class="form-control" id="bank" placeholder="Nama bank" required="" maxlength="50" value="" pattern=".{3,50}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cabang" class="col-sm-2 control-label">Cabang</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="cabang" class="form-control" id="cabang" placeholder="Nama cabang bank" required="" maxlength="50" value="" pattern=".{3,50}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="nominal" class="col-sm-2 control-label">Nominal</label>
+                                        <div class="col-sm-10">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">Rp</span>
+                                                <input type="number" name="nominal" id="nominal" class="form-control" placeholder="Nominal" value="150000">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-2 col-sm-10">
+                                                <button type="submit" class="btn btn-success btn-sm">Konfirmasi</button>
+                                                <button type="reset" class="btn btn-default btn-sm">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="atb-ibank">
+                            <form id="formibank" action="{% url 'reg_confirm_submit' 'ibank' %}" method="post" role="form" enctype="multipart/form-data">
+
+                                {% csrf_token %}
+
+                                <div class="panel-body form-horizontal">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Rekening Tujuan</label>
+                                        <div class="col-sm-10">
+                                            <select class="form-control" name="rektujuan2" required="">
+                                                <option value="0" selected>---</option>
+                                                {% for bank in banks %}
+                                                <option value="{{ bank.id }}">{{ bank.nama }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="kv" class="col-sm-2 control-label">Kode Verifikasi</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="kv2" class="form-control" id="kv2" placeholder="Kode verifikasi, misal: 1A2B3C4D" required="" maxlength="50" value="" pattern=".{8}"/>
+                                            <span style="color: red;"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="pengirim" class="col-sm-2 control-label">Rekening</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="norek2" class="form-control" id="norek2" placeholder="Nomor rekening" required="" maxlength="50" value="" pattern=".{3,50}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="bank" class="col-sm-2 control-label">Dari Bank</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="bank2" class="form-control" id="bank2" placeholder="Nama bank" required="" maxlength="50" value="" pattern=".{3,50}"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="bank" class="col-sm-2 control-label"></label>
+                                        <div class="col-sm-10">
+                                            <p>Sila lampirkan bukti <em>scan</em> atau <em>photo</em> slip transfer
+                                                atau <em>print-out</em> ATM:</p>
+                                            <p><input type="file" id="buktitrf" name="buktitrf"></p>
+                                            <p style="color: maroon;">Catatan: Format file harus JPG/PNG/GIF</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                                        <div class="form-group">
+                                            <div class="col-sm-offset-2 col-sm-10">
+                                                <button type="submit" class="btn btn-success btn-sm">Konfirmasi</button>
+                                                <button type="reset" class="btn btn-default btn-sm">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="onsite">
+                            <h3>Bayar Ditempat</h3>
+                            <p><span class="glyphicon glyphicon-info-sign"></span> Jika anda telah melakukan pelunasan secara langsung melalui <em>front office</em> kami, maka kami informasikan
+                            bahwa anda <u>tidak perlu</u> melakukan konfirmasi pembayaran anda di sini, karena akan kami proses
+                            dan verifikasi secara langsung sesaat pembayaran anda telah lunas.</p>
+
+                            <p>Untuk langkah berikutnya, silakan melakukan pemeriksaan status pendaftaran anda pada menu <strong><a href="#">Verifikasi</a></strong>
+                            dengan mencantumkan <strong>kode verifikasi</strong> yang telah anda catat sebelumnya.</p>
+
+                            <p>Terima kasih!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endblock %}

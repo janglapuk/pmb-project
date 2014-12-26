@@ -1,0 +1,428 @@
+    {% extends 'administrator/base.html' %}
+
+    {% block title %}Pengaturan Akademik{% endblock %}
+    {% block nav_settings_active %} active{% endblock %}
+    {% block nav_left_settings_academic %} active{% endblock %}
+
+    {% block extra_headers %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#modal-tambah-prodi').find('form').submit(event, function() {
+                var namaProdi = $(this).find('input#nama-prodi');
+                if(namaProdi.val().length < 3) {
+                    alert('Nama prodi kurang dari 3 karater.');
+                    return false;
+                }
+
+                var jenjang = $(this).find('select#jenjang-studi');
+                if($('option:first', jenjang).is(':selected')) {
+                    alert('Anda harus memilih jenjang yang sesuai.');
+                    return false;
+                }
+            });
+
+            $('#modal-tambah-kelas-prodi').find('form').submit(event, function() {
+                var prodi = $(this).find('select#program-studi');
+                if($('option:first', prodi).is(':selected')) {
+                    alert('Anda belum memilih program studi yang sesuai.');
+                    return false;
+                }
+
+                var kelas = $(this).find('select#kelas-studi');
+                if($('option:first', kelas).is(':selected')) {
+                    alert('Anda belum memilih kelas studi yang sesuai.');
+                    return false;
+                }
+            });
+
+            $('button[data-action]').on('click', function() {
+                var action = $(this).attr('data-action');
+                var data_id = $(this).attr('data-id');
+
+                $('<form/>', {
+                    action: '{% url 'adm_settings_academic' %}',
+                    method: 'post',
+                })
+                .append($('<input/>', {
+                    name: 'csrfmiddlewaretoken', value: '{{ csrf_token }}'
+                }))
+                .append($('<input/>', {
+                    name: 'action', value: action
+                }))
+                .append($('<input/>', {
+                    name: 'data-id', value: data_id
+                }))
+                .submit();
+            });
+
+            {% if error %}
+            alert('{{ error_message }}');
+            {% endif %}
+    });
+    </script>
+
+    {% endblock %}
+
+    {% block main_content %}
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Pengaturan Akademik</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Master Kelas
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="50">ID</th>
+                                        <th width="285">Nama</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for kelas in qs_kelas %}
+                                    <tr>
+                                        <td>{{ kelas.pk }}</td>
+                                        <td>{{ kelas.nama }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-circle" data-id="{{ kelas.pk }}" data-action="delete-kelas"><i class="fa fa-remove" title="Hapus"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+
+                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="tambah-kelas" type="submit" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-tambah-kelas">Tambah Kelas</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-6 -->
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Master Jenjang
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="50">ID</th>
+                                        <th width="285">Nama</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for jenjang in qs_jenjang %}
+                                    <tr>
+                                        <td>{{ jenjang.pk }}</td>
+                                        <td>{{ jenjang.nama }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-circle" data-id="{{ jenjang.pk }}" data-action="delete-jenjang"><i class="fa fa-remove" title="Hapus"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+
+                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="tambah-jenjang" type="submit" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-tambah-jenjang">Tambah Jenjang</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-6 -->
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-tambah-kelas" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <form action="{% url 'adm_settings_academic' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="tambah-kelas" />
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Tambah Data Kelas</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="panel-body form-horizontal">
+                                    <div class="form-group">
+                                        <label for="kelas" class="col-sm-2 control-label">Nama</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="kelas-studi" id="kelas" placeholder="Nama kelas" value=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Tambahkan</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </form>
+            </div>
+            <!-- /.modal -->
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-tambah-jenjang" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <form action="{% url 'adm_settings_academic' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="tambah-jenjang" />
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Tambah Data Jenjang</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="panel-body form-horizontal">
+                                    <div class="form-group">
+                                        <label for="jenjang" class="col-sm-2 control-label">Nama</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="jenjang-studi" id="jenjang" placeholder="Nama jenjang" value=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Tambahkan</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </form>
+            </div>
+            <!-- /.modal -->
+
+        </div>
+
+        <div class="row">
+            <!-- /.col-lg-6 -->
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Master Program Studi
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="50">ID</th>
+                                        <th>Nama</th>
+                                        <th>Jenjang</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for prodi in qs_prodi %}
+                                    <tr>
+                                        <td>{{ prodi.pk }}</td>
+                                        <td>{{ prodi.nama }}</td>
+                                        <td>{{ prodi.jenjang.nama }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-circle" data-id="{{ prodi.pk }}" data-action="delete-prodi"><i class="fa fa-remove" title="Hapus"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+
+                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="tambah-prodi" type="submit" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-tambah-prodi">Tambah Prodi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-6 -->
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Master Kelas Program Studi
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="50">ID</th>
+                                        <th>Prodi</th>
+                                        <th>Kelas</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for kelas_prodi in qs_kelas_prodi %}
+                                    <tr>
+                                        <td>{{ kelas_prodi.pk }}</td>
+                                        <td>{{ kelas_prodi.prodi.nama }}</td>
+                                        <td>{{ kelas_prodi.kelas.nama }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-circle" data-id="{{ kelas_prodi.pk }}" data-action="delete-kelas-prodi"><i class="fa fa-remove" title="Hapus"></i></button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+
+                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="tambah-kelas-prodi" type="submit" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modal-tambah-kelas-prodi">Tambah Kelas Prodi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel -->
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-tambah-prodi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <form action="{% url 'adm_settings_academic' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="tambah-prodi" />
+
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Tambah Data Program Studi</h4>
+                            </div>
+                            <div class="modal-body form-horizontal">
+
+                                <div class="form-group">
+                                    <label for="jenjang" class="col-sm-2 control-label">Prodi</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" name="nama-prodi" id="nama-prodi" placeholder="Nama prodi" value=""/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Jenjang</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" name="jenjang-studi" id="jenjang-studi" required="">
+                                            <option value="0" selected>---</option>
+                                            {% for jenjang in qs_jenjang %}
+                                            <option value="{{ jenjang.pk }}">{{ jenjang.nama }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Tambahkan</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </form>
+            </div>
+            <!-- /.modal -->
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal-tambah-kelas-prodi" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <form action="{% url 'adm_settings_academic' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="tambah-kelas-prodi" />
+
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Tambah Data Program Studi</h4>
+                            </div>
+                            <div class="modal-body form-horizontal">
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Prodi</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" name="program-studi" id="program-studi" required="">
+                                            <option value="0" selected>---</option>
+                                            {% for prodi in qs_prodi %}
+                                            <option value="{{ prodi.pk }}">{{ prodi.nama }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Kelas</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" name="kelas-studi" id="kelas-studi" required="">
+                                            <option value="0" selected>---</option>
+                                            {% for kelas in qs_kelas %}
+                                            <option value="{{ kelas.pk }}">{{ kelas.nama }}</option>
+                                            {% endfor %}
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                                <button type="submit" class="btn btn-primary">Tambahkan</button>
+                            </div>
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                </form>
+            </div>
+            <!-- /.modal -->
+
+        </div>
+
+    </div>
+    {% endblock %}

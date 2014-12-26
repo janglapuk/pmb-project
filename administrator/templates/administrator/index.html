@@ -1,0 +1,172 @@
+    {% extends 'administrator/base.html' %}
+
+    {% block title %}Beranda{% endblock %}
+    {% block nav_left_beranda %} active{% endblock %}
+
+    {% block extra_headers %}
+    <script>
+		$(document).ready(function() {
+			$('#dataTables-example').dataTable({
+				'ajax': '/administrator/json/reg_all/'
+			});
+		});
+	</script>
+    {% endblock %}
+
+    {% block main_content %}
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header">Pembayaran</h3>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-dollar fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ counts.payment_all }}</div>
+                                <div>Total Pembayaran</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'adm_payments' 'all' %}">
+                        <div class="panel-footer">
+                            <span class="pull-left">Lihat Detail</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-check-circle fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ counts.payment_confirmed }}</div>
+                                <div>Terkonfirmasi</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'adm_payments' 'confirmed' %}">
+                        <div class="panel-footer">
+                            <span class="pull-left">Lihat Detail</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <div class="panel panel-yellow">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-warning fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ counts.payment_unconfirmed }}</div>
+                                <div>Belum Dikonfirmasi</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'adm_payments' 'unconfirmed' %}">
+                        <div class="panel-footer">
+                            <span class="pull-left">Lihat Detail</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 class="page-header">Verifikasi Pendaftaran</h3>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-users fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ counts.reg_all }}</div>
+                                <div>Total Pendaftar</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'adm_registrations' 'all' %}">
+                        <div class="panel-footer">
+                            <span class="pull-left">Lihat Detail</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <div class="panel panel-green">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-check-circle fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ counts.reg_verified }}</div>
+                                <div>Terverifikasi</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'adm_registrations' 'verified' %}">
+                        <div class="panel-footer">
+                            <span class="pull-left">Lihat Detail</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <div class="panel panel-yellow">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <i class="fa fa-warning fa-5x"></i>
+                            </div>
+                            <div class="col-xs-9 text-right">
+                                <div class="huge">{{ counts.reg_unverified }}</div>
+                                <div>Belum Diverifikasi</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'adm_registrations' 'unverified' %}">
+                        <div class="panel-footer">
+                            <span class="pull-left">Lihat Detail</span>
+                            <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                            <div class="clearfix"></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /#page-wrapper -->
+    {% endblock%}

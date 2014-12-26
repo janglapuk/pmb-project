@@ -1,0 +1,140 @@
+        {% extends 'register/base.html' %}
+
+        {% block title %}Verifikasi Status Pendaftaran{% endblock %}
+        {% block nav_active_confirm_verify %} active{% endblock %}
+
+        {% block extra_header %}
+        <style type="text/css">
+            #result-table thead,#vertical-2 tbody{
+                display:inline-block;
+            }
+
+            div .result {
+                margin-bottom: 10px;
+            }
+
+            div .result .header {
+                font-weight: bold;
+            }
+
+        </style>
+
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $('form#periksa-kv').submit(function(event) {
+                var kv = $('input#kv');
+                if(kv.val().length != 8) {
+                    alert('Masukkan kode verifikasi dengan benar.');
+                    kv.focus();
+                    event.preventDefault();
+                }
+
+                var retVal = null;
+                var jsonUrl = '{% url 'reg_pmb_json' 'check_kv' 'KVID' %}';
+                jsonUrl = jsonUrl.replace('KVID', kv.val());
+                $.ajax({
+                    url: jsonUrl,
+                    dataType: 'json',
+                    async: false,
+                    success: function(response) {
+                        retVal = response;
+                    }
+                });
+
+                if(retVal == null || retVal.error == true) {
+                    alert(retVal.message);
+                    kv.focus();
+                    event.preventDefault();
+                }
+            });
+
+            $('input#kv').focus();
+        });
+        </script>
+        {% endblock %}
+
+        {% block main_content %}
+        <div class="container">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Periksa Status Pendaftaran</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="text-center">
+                        <p>Masukkan kode verifikasi pendaftaran pada isian di bawah ini</p>
+                        <form id="periksa-kv" class="form-search" method="post" action="{% url 'reg_verify' %}">
+                            {% csrf_token %}
+                            <input type="text" class="input-medium search-query" id="kv" name="kv" value="{% if found %}{{ pendaftar.kv }}{% endif %}"/>
+                            <button type="submit" class="btn btn-success btn-sm">Periksa</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% if found %}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3>Status Pendaftaran</h3>
+                    <hr />
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Nama</div>
+                        <div class="col-xs-12 col-md-9 header">{{ pendaftar.nama }}</div>
+                    </div>
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Kode Verifikasi</div>
+                        <div class="col-xs-12 col-md-9 header">{{ pendaftar.kv }}</div>
+                    </div>
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Tanggal Daftar</div>
+                        <div class="col-xs-12 col-md-9 header">{{ pendaftar.tanggal }}</div>
+                    </div>
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Jenjang</div>
+                        <div class="col-xs-12 col-md-9 header">{{ pendaftar.jenjang }}</div>
+                    </div>
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Program Studi</div>
+                        <div class="col-xs-12 col-md-9 header">{{ pendaftar.prodi }}</div>
+                    </div>
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Kelas</div>
+                        <div class="col-xs-12 col-md-9 header">{{ pendaftar.kelas }}</div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Status Pembayaran</div>
+                        <div class="col-xs-12 col-md-9 header">
+                        {% if pembayaran %}
+                            {% if pembayaran_status == 0 %}
+                            <span class="text-warning"><span class="glyphicon glyphicon-time"></span> Pembayaran anda belum kami konfirmasi, harap periksa kembali beberapa saat.</span>
+                            {% elif pembayaran_status == 1 %}
+                            <span class="text-success"><span class="glyphicon glyphicon-ok"></span> Pembayaran telah diterima.</span>
+                            {% else %}
+                            <span class="text-error"><span class="glyphicon glyphicon-warning-sign"></span> Pembayaran bermasalah, harap hubungi kami.</span>
+                            {% endif %}
+                        {% else %}
+                            <span><span class="glyphicon glyphicon-remove"></span> Konfirmasi pembayaran belum diterima.</span>
+                        {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row result">
+                        <div class="col-xs-6 col-md-3">Status Pendaftaran</div>
+                        <div class="col-xs-12 col-md-9 header">
+                        {% if verifikasi == 0 %}
+                            <span class="text-warning"><span class="glyphicon glyphicon-time"></span> Pendaftaran belum diverifikasi.</span>
+                        {% elif verifikasi == 1 %}
+                            <span class="text-success"><span class="glyphicon glyphicon-ok"></span> Pendaftaran sukses.</span>
+                        {% else %}
+                            <span class="text-error"><span class="glyphicon glyphicon-remove"></span> Pendaftaran bermasalah, harap hubungi kami.</span>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        {% endblock %}

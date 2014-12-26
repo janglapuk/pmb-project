@@ -1,0 +1,19 @@
+        {% extends 'register/base.html' %}
+
+        {% block title %}Kode Verifikasi{% endblock %}
+        {% block nav_active_pmb %} active{% endblock %}
+
+        {% block main_content %}
+        <div class="container">
+            <div class="jumbotron">
+                <h3>Selamat!</h3>
+                <p><small>Anda telah terdaftar dan status pendaftaran anda saat ini adalah
+                <span class="text-danger"><strong>BELUM TERVERIFIKASI</strong></span> karena anda belum melakukan proses pembayaran biaya pendaftaran.</small></p>
+                <p><small>Silakan catat dan lakukan pembayaran dengan mencantumkan kode verifikasi di bawah ini:</small></p>
+                <p class="text-center"><code>{{ kv }}</code></p>
+                <p><small>Jika proses pembayaran sudah dilakukan, silakan konfirmasi pada menu <a href="{% url 'reg_confirm' %}">Konfirmasi Pembayaran</a>,
+                kemudian status pendaftaran anda dapat anda periksa pada menu <a href="{% url 'reg_verify' %}">Verifikasi Status</a>.</small></p>
+            </div>
+        </div>
+
+        {% endblock %}

@@ -4,3 +4,5 @@ db.sqlite3
 .pydevproject
 vpython27
 .idea
+register/migrations/*.py
+!register/migrations/__init__.py

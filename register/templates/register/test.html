@@ -1,0 +1,14 @@
+        {% extends 'register/base.html' %}
+
+        {% block title %}Form Test{% endblock %}
+
+        {% block main_content %}
+        <div class="container">
+            <form action='' method='post'>
+                {% csrf_token %}
+                {{ form.fieldname }}
+                <input type='submit' value='Submit' />
+            </form>
+        </div>
+
+        {% endblock %}

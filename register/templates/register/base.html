@@ -1,0 +1,160 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/html">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	{% block extra_meta %}{% endblock %}
+
+	<title>STMIK SPB - {% block title %}{% endblock %}</title>
+
+	<!-- jquery -->
+	<script type="text/javascript" src="/static/jquery/js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="/static/jquery/js/typeahead.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+	<!-- main bootstrap -->
+	<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-theme.min.css" />
+
+	<!-- bootstrap-datepicker -->
+	<link rel="stylesheet" type="text/css" href="/static/bootstrap-datepicker/css/datepicker.css" />
+	<script type="text/javascript" src="/static/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
+	<style type="text/css">
+		/*
+		textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
+			border-color: rgba(229, 103, 23, 0.8);
+			box-shadow: 0 1px 1px rgba(229, 103, 23, 0.075) inset, 0 0 8px rgba(229, 103, 23, 0.6);
+			outline: 0 none;
+		}
+		*/
+
+		.container {
+			margin: 0 auto;
+		}
+
+		@media (min-width: 768px) {
+			.container {
+				width: 750px;
+			}
+		}
+
+		@media (min-width: 992px) {
+			.container {
+				width: 750px;
+			}
+		}
+		@media (min-width: 1200px) {
+			.container {
+				width: 750px;
+			}
+		}
+
+		.signinfo-right {
+			margin-right: 25px;
+		}
+
+		.typeahead {
+			background-color: #FFFFFF;
+		}
+		.typeahead:focus {
+			border: 2px solid #0097CF;
+		}
+		.tt-query {
+			box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+		}
+		.tt-hint {
+			color: #999999;
+		}
+
+		.tt-dropdown-menu {
+			background-color: #FFFFFF;
+			border: 1px solid rgba(0, 0, 0, 0.2);
+			border-radius: 8px;
+			box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+			margin-top: 12px;
+			padding: 8px 0;
+			width: 422px;
+		}
+		.tt-suggestion {
+			line-height: 24px;
+			padding: 3px 20px;
+		}
+		.tt-suggestion.tt-is-under-cursor {
+			background-color: #0097CF;
+			color: #FFFFFF;
+		}
+		.tt-suggestion p {
+			margin: 0;
+		}
+	</style>
+
+	{% block extra_header %}{% endblock %}
+</head>
+
+<body>
+	<div class="container">
+		<nav role="navigation" class="navbar navbar-default">
+			<div class="navbar-header">
+				<button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a href="//www.spb.ac.id" class="navbar-brand"><small>STMIK</small> SPB</a>
+			</div>
+			<div id="navbarCollapse" class="collapse navbar-collapse">
+				<ul class="nav navbar-nav">
+					<li class="nop{% block nav_active_beranda %}{% endblock %}"></i><a href="/register/">Beranda</a></li>
+					<li class="nop{% block nav_active_pmb %}{% endblock %}"><a href="/register/pmb">PMB</a></li>
+					<li class="dropdown{% block nav_active_confirm_verify %}{% endblock %}">
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Konfirmasi & Verifikasi <b class="caret"></b></a>
+						<ul role="menu" class="dropdown-menu">
+							<li><a href="{% url 'reg_confirm' %}"><span class="glyphicon glyphicon-usd"></span> Konfirmasi Pembayaran</a></li>
+							<li><a href="{% url 'reg_verify' %}"><span class="glyphicon glyphicon-check"></span> Periksa Status Pendaftaran</a></li>
+						</ul>
+					</li>
+
+					<li class="dropdown">
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Bantuan <b class="caret"></b></a>
+						<ul role="menu" class="dropdown-menu">
+							<li><a href="{% url 'reg_help_how_to' %}"><span class="glyphicon glyphicon-th-list"></span> Cara Mendaftar</a></li>
+							<li><a href="{% url 'reg_help_payment_info' %}"><span class="glyphicon glyphicon-tag"></span> Informasi Pembayaran</a></li>
+							<li><a href="{% url 'reg_help_contact' %}"><span class="glyphicon glyphicon-earphone"></span> Hubungi Kami</a></li>
+							<li class="divider"></li>
+							<li><a href="{% url 'reg_help_about' %}"><span class="glyphicon glyphicon-star"></span> Tentang Proyek</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown{% block nav_active_login %}{% endblock %}" id="menuLogin">
+						{% if authed %}
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Welcome, {{ username }} <b class="caret"></b></a>
+						<ul role="menu" class="dropdown-menu" style="padding:17px;">
+							<li><a href="{% url 'adm_beranda' %}"><i class="glyphicon glyphicon-film"></i> Administrasi</a></li>
+							<li class="divider"></li>
+							<li><a href="{% url 'reg_logout' %}"><i class="glyphicon glyphicon-off"></i> Logout</a></li>
+						</ul>
+						{% else %}
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#">Login <b class="caret"></b></a>
+						<div class="dropdown-menu" style="padding:17px;">
+							<form class="form" id="formLogin" action="{% url 'reg_login' %}" method="post">
+								{% csrf_token %}
+								<input class="form-control" name="username" id="username" type="text" placeholder="Username" required="">
+								<input class="form-control" name="password" id="password" type="password" placeholder="Password" required=""><br>
+								<button type="submit" id="btnLogin" class="btn">Login</button>
+							</form>
+						</div>
+						{% endif %}
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+
+	{% block main_content %}{% endblock %}
+</body>
+
+</html>

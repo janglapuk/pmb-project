@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>Administrasi PMB - {% block title %}{% endblock %}</title>
+
+	<!-- Bootstrap Core CSS -->
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- MetisMenu CSS -->
+	<link href="/static/css/plugins/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+	<!-- DataTables CSS -->
+	<link href="/static/css/plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+	<!-- Custom CSS -->
+	<link href="/static/css/sb-admin-2.css" rel="stylesheet">
+
+	<!-- Custom Fonts -->
+	<link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+	<script src="/static/jquery/js/jquery-1.11.1.min.js"></script>
+	<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+	<!--<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>-->
+
+	<script src="/static/js/admin.js"></script>
+
+	<style type="text/css">
+        #dataTables-registrant tr {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: pointer;
+        }
+        #dataTables-registrant tr:hover td {
+            background: #ccc;
+        }
+
+		.badge-right {
+			float: right;
+		}
+
+		.btn-circle {
+			width: 20px;
+			height: 20px;
+			padding: 2px 0;
+			border-radius: 15px;
+			text-align: center;
+			font-size: 12px;
+			line-height: 1.428571429;
+		}
+
+	</style>
+
+	{% block extra_headers %}{% endblock %}
+
+</head>
+
+<body>
+
+	<div id="wrapper">
+
+		<!-- Navigation -->
+		<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="index.html">Administrasi PMB</a>
+			</div>
+			<!-- /.navbar-header -->
+
+			<ul class="nav navbar-top-links navbar-right">
+				<!-- /.dropdown -->
+				<li class="dropdown">
+					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+						<i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+					</a>
+					<ul class="dropdown-menu dropdown-user">
+						<li><a href="{% url 'adm_logout' %}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+						</li>
+					</ul>
+					<!-- /.dropdown-user -->
+				</li>
+				<!-- /.dropdown -->
+			</ul>
+			<!-- /.navbar-top-links -->
+
+			<div class="navbar-default sidebar" role="navigation">
+				<div class="sidebar-nav navbar-collapse">
+					<ul class="nav" id="side-menu">
+						<!--
+						<li class="sidebar-search">
+							<div class="input-group custom-search-form">
+								<input type="text" class="form-control" placeholder="Search...">
+								<span class="input-group-btn">
+                                <button class="btn btn-default" type="button">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+							</div>
+						</li>
+						-->
+						<li><a class="nop{% block nav_left_beranda %}{% endblock %}" href="{% url 'adm_beranda' %}"><i class="fa fa-dashboard fa-fw"></i> Beranda</a></li>
+						<li class="nop{% block nav_pembayaran_active %}{% endblock%}">
+							<a href="#"><i class="fa fa-dollar fa-fw"></i> Pembayaran<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li><a class="nop{% block nav_left_status_all %}{% endblock %}" href="{% url 'adm_payments' 'all' %}">Semua Pembayaran <span id="badge-payment-all" class="badge badge-right">{{ counts.payment_all }}</span></a></li>
+								<li><a class="nop{% block nav_left_status_confirmed %}{% endblock %}" href="{% url 'adm_payments' 'confirmed' %}">Terkonfirmasi <span id="badge-payment-confirmed" class="badge badge-right">{{ counts.payment_confirmed }}</span></a></li>
+								<li><a class="nop{% block nav_left_status_unconfirmed %}{% endblock %}" href="{% url 'adm_payments' 'unconfirmed' %}">Belum Terkonfirmasi <span id="badge-payment-unconfirmed" class="badge badge-right">{{ counts.payment_unconfirmed }}</span></a></li>
+							</ul>
+							<!-- /.nav-second-level -->
+						</li>
+						<li class="nop{% block nav_reg_active %}{% endblock%}">
+                            <a href="#"><i class="fa fa-file-text-o fa-fw"></i> Verifikasi<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li><a class="nop{% block nav_left_reg_all %}{% endblock %}" href="{% url 'adm_registrations' 'all' %}">Semua Verifikasi <span id="badge-reg-all" class="badge badge-right">{{ counts.reg_all }}</span></a></li>
+                                <li><a class="nop{% block nav_left_reg_verified %}{% endblock %}" href="{% url 'adm_registrations' 'verified' %}">Terverifikasi <span id="badge-reg-verified" class="badge badge-right">{{ counts.reg_verified }}</span></a></li>
+                                <li><a class="nop{% block nav_left_reg_unverified %}{% endblock %}" href="{% url 'adm_registrations' 'unverified' %}">Belum Terverifikasi <span id="badge-reg-unverified" class="badge badge-right">{{ counts.reg_unverified }}</span></a></li>
+
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+
+						<li class="nop{% block nav_settings_active %}{% endblock%}">
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> Pengaturan<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li><a class="nop{% block nav_left_settings_general %}{% endblock %}" href="{% url 'adm_settings_general' %}">Umum</a></li>
+                                <li><a class="nop{% block nav_left_settings_academic %}{% endblock %}" href="{% url 'adm_settings_academic' %}">Akademik</a></li>
+                                <li><a class="nop{% block nav_left_settings_administration %}{% endblock %}" href="{% url 'adm_settings_administration' %}">Administrasi</a></li>
+                                <li><a class="nop{% block nav_left_settings_users %}{% endblock %}" href="{% url 'adm_settings_users' %}">Pengguna</a></li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+						<li><a href="{% url 'adm_logout' %}"><i class="fa fa-sign-out fa-fw"></i> Logout ({{ username }})</a></li>
+					</ul>
+				</div>
+				<!-- /.sidebar-collapse -->
+			</div>
+			<!-- /.navbar-static-side -->
+		</nav>
+
+		{% block main_content %}{% endblock %}
+
+	</div>
+	<!-- /#wrapper -->
+
+	<!-- jQuery -->
+	<script src="/static/js/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="/static/js/bootstrap.min.js"></script>
+
+	<!-- Metis Menu Plugin JavaScript -->
+	<script src="/static/js/plugins/metisMenu/metisMenu.min.js"></script>
+
+	<!-- DataTables JavaScript -->
+	<script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+	<script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+
+	<!-- Custom Theme JavaScript -->
+	<script src="/static/js/sb-admin-2.js"></script>
+
+	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+        {% extends 'register/base.html' %}
+
+        {% block title %}Konfirmasi Pembayaran Sukses{% endblock %}
+        {% block nav_active_confirm_verify %} active{% endblock %}
+
+        {% block main_content %}
+        <div class="container">
+            <div class="jumbotron">
+                <h3>Terima Kasih</h3>
+                <p><small>Konfirmasi pembayaran anda telah kami terima, selanjutnya akan kami proses dan melakukan verifikasi
+                data yang telah anda kirimkan.</small></p>
+                <p><small>Silakan melakukan <a href="{% url 'reg_verify' %}">Verifikasi Status</a> dengan menggunakan
+                <strong>kode verifikasi</strong> yang telah anda simpan. Jika status verifikasi anda belum berubah, silakan coba periksa
+                kembali setelah beberapa jam setelahnya.</small></p>
+                <p><small>Jika ada masalah atau pertanyaan, silakan hubungi kami pada menu
+                <code>Bantuan</code> <span class="glyphicon glyphicon-chevron-right"></span> <a href="#"><code>Hubungi Kami</code></a>.</small></p>
+            </div>
+        </div>
+
+        {% endblock %}

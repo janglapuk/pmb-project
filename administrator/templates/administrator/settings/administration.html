@@ -1,0 +1,108 @@
+    {% extends 'administrator/base.html' %}
+
+    {% block title %}Pengaturan Umum{% endblock %}
+    {% block nav_settings_active %} active{% endblock %}
+    {% block nav_left_settings_administration %} active{% endblock %}
+
+    {% block extra_headers %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#tambah-bank').on('click', function() {
+                var bank = prompt('Masukkan data bank');
+                if(bank.length > 0) {
+                    var form = $('<form/>', {
+                        method: 'post',
+                        action: '{% url 'adm_settings_administration' %}',
+                    });
+
+                    form.append(
+                        $('<input/>', {
+                            type: 'hidden',
+                            name: 'csrfmiddlewaretoken',
+                            value: '{{ csrf_token }}',
+                        })
+                    ).append(
+                        $('<input/>', {
+                            type: 'hidden',
+                            name: 'newbank',
+                            value: bank,
+                        })
+                    ).append(
+                        $('<input/>', {
+                            type: 'hidden',
+                            name: 'action',
+                            value: 'addbank',
+                        })
+                    );
+
+                    form.submit();
+                }
+            });
+
+            {% if error %}
+            alert('{{ error_message }}');
+            {% endif %}
+        });
+    </script>
+    {% endblock %}
+
+    {% block main_content %}
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Pengaturan Administrasi</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Bank
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th width="50">ID</th>
+                                        <th width="285">Nama</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for bank in banks %}
+                                    <tr>
+                                        <td>{{ bank.pk }}</td>
+                                        <td>{{ bank.nama }}</td>
+                                        <td>
+                                            <form action="{% url 'adm_settings_administration' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="bank-id" value="{{ bank.pk }}" />
+                                            <input type="hidden" name="action" value="delbank" />
+                                            <button type="submit" class="btn btn-danger btn-circle"><i class="fa fa-remove" title="Hapus"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                    <div class="panel-footer" style="overflow: hidden; text-align: right;">
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="tambah-bank" type="submit" class="btn btn-success btn-sm">Tambah Bank</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.panel -->
+            </div>
+        </div>
+    </div>
+    {% endblock %}

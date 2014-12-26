@@ -1,0 +1,578 @@
+        {% extends 'register/base.html' %}
+
+        {% block title %}Pendaftaran Mahasiswa Baru 2015{% endblock %}
+        {% block nav_active_pmb %} active{% endblock %}
+
+        {% block extra_header %}
+        <script type="text/javascript">
+            var fnValidateInputs = null;
+
+            $(document).ready(function() {
+
+                /*
+                 * Author   : Thami Rusdi Agus (http://janglapuk.github.io)
+                 * Desc     : Mengubah combobox secara dinamis berbasis data JSON
+                 */
+                function updateCombo(selector, id, key)
+                {
+                    if(selector.length > 0) {
+                        $(selector).find('option:gt(0)').remove(); // menghapus semua items kecuali item pertama
+
+                        if(id != '0') { // jika bukan item default
+
+                            var jsonUrl = '{% url 'reg_pmb' %}' + 'json/' + key + '/' + id + '/';
+
+                            $.getJSON(jsonUrl, function(response){
+                                if(response.error == false) {
+                                    //console.dir(response);
+                                    $.each(response.data, function(key, val){
+                                        var option = $('<option />');
+                                        option.attr('value', key).text(val);
+                                        $(selector).append(option);
+                                    });
+                                    $(selector).removeAttr('disabled');
+                                } else {
+                                    alert(response.message);
+                                }
+                            });
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                /*
+                 * Author   : Thami Rusdi Agus (http://janglapuk.github.io)
+                 * Desc     : Memeriksa data apakah sudah ada dalam database dengan fungsi synchronously ajax
+                 * Ref      : http://stackoverflow.com/questions/15282821/getjson-does-not-honor-asyncfalse
+                 */
+                function checkInputExist(selector, key, data_id)
+                {
+                    var retVal = true;
+                    if(selector.length > 0) {
+                        if($(selector).val().length > 0) {
+                            var jsonUrl = '{% url 'reg_pmb' %}' + 'json/check_' + key + '/' + data_id + '/';
+
+                            $.ajax({
+                                url: jsonUrl,
+                                dataType: 'json',
+                                async: false,
+                                success: function(response) {
+                                    retVal = response.error;
+                                }
+                            });
+                        }
+                    }
+                    console.log(key + ' / ' + data_id + '/ ' + retVal);
+                    return retVal;
+                }
+
+                function validateInput(selector, key, minlen)
+                {
+                    if($(selector).val().length > minlen) {
+                        var data_id = $(selector).val();
+                        var jsonUrl = '{% url 'reg_pmb' %}' + 'json/check_' + key + '/' + data_id + '/';
+                        $.getJSON(jsonUrl, function(response) {
+                            var parent = $('#group-' + key);
+                            var danger = $('#error-' + key);
+                            if(response.error) {
+                                $(parent).addClass('has-error');
+                                $(danger).css('display', 'inline').text(response.message);
+                            } else {
+                                $(parent).removeClass('has-error');
+                                $(danger).css('display', 'none');
+                            }
+                        });
+                    }
+                }
+
+                fnValidateInputs = function()
+                {
+                    var elements = ['identitas', /*'email',*/ 'ijazah'];
+                    var checks = [];
+
+                    for(i=0; i < elements.length; i++) {
+                        var sel = $('#' + elements[i]);
+                        if(sel.length > 0) {
+                            checks[i] = checkInputExist(sel, elements[i], sel.val());
+                            if(checks[i]) {
+                                var parent = $('#group-' + elements[i]);
+                                var danger = $('#error-' + elements[i]);
+
+                                $(parent).addClass('has-error');
+                                $(danger).css('display', 'inline').text('Mohon periksa lagi!');
+                            }
+                        }
+                    }
+
+                    for(i=0; i < checks.length; i++) {
+                        if(checks[i] == true)
+                            //alert(elements[i] + ' error');
+                            return false;
+                    }
+
+                    return true;
+                }
+
+                /*
+                 * Author   : Thami Rusdi Agus (http://janglapuk.github.io)
+                 * Desc     : Reset combo items
+                 */
+                function resetComboItems(selector)
+                {
+                    if($(selector).length > 0) {
+                        $('option:first', selector).attr('selected','selected');
+                        $(selector).attr('disabled','disabled');
+                        $(selector).find('option:gt(0)').remove();
+                    }
+
+                    return;
+                }
+
+                $('#rencana-jenjang').change(function() {
+                    var jenjangID = $('option:selected', this).val();
+
+                    resetComboItems($('#rencana-prodi'));
+                    resetComboItems($('#rencana-kelas'));
+
+                    updateCombo($('#rencana-prodi'), jenjangID, 'prodi');
+                });
+
+                $('#rencana-prodi').change(function() {
+                    var prodiID = $('option:selected', this).val();
+
+                    resetComboItems($('#rencana-kelas'));
+
+                    updateCombo($('#rencana-kelas'), prodiID, 'kelas');
+                });
+
+                // datepicker
+                $("#tgl-lahir").datepicker({
+                    format: "yyyy-mm-dd",
+                    startView: 2,
+                    autoclose: true,
+                    language: "id"
+                });
+
+                $("#pend-tahun-lulus").datepicker({
+                    format: "yyyy",
+                    startView: 2,
+                    minViewMode: 2,
+                    language: "id",
+                    autoclose: true
+                });
+
+                // typeahead
+                $('input#pend-prov-sekolah').typeahead({
+                    name: 'provinsi2',
+                    prefetch: '/static/data/provinsi.json',
+                });
+
+                $('input#provinsi').typeahead({
+                    name: 'provinsi2',
+                    prefetch: '/static/data/provinsi.json',
+                });
+
+                $('#identitas').focusout(function() {
+                    validateInput(this, 'identitas', 5);
+                });
+
+                $('#ijazah').focusout(function() {
+                    validateInput(this, 'ijazah', 5);
+                });
+
+                $('#reg-form').submit(function(event) {
+                    var setuju = $('#checkbox-setuju').is(':checked');
+                    if(!setuju) {
+                        alert('Anda belum menyetujui syarat dan ketentuan yang kami berikan.');
+                    } else {
+                        var valid = fnValidateInputs();
+                        var noSelection = $('#rencana-jenjang option:first').is(':selected') ||
+                                          $('#rencana-prodi option:first').is(':selected') ||
+                                          $('#rencana-kelas option:first').is(':selected');
+
+                        if(!valid || noSelection) {
+                            alert('Ada beberapa kolom isian yang tidak valid, silakan periksa ulang.');
+                            event.preventDefault();
+                        }
+                    }
+                });
+            });
+        </script>
+        {% endblock %}
+
+        {% block main_content %}
+        <div class="container">
+            <div class="page-header">
+                <h2>Pendaftaran Mahasiswa Baru <small>Tahun Akademik 2015/2016</small></h2>
+            </div>
+
+            <form id="reg-form" method="post" action="{% url 'reg_pmb_submit' %}">
+
+                {% csrf_token %}
+
+                <div class="panel panel-primary">
+
+                    <div class="panel-heading">
+                        <h3 class="panel-title" id="data-pribadi">Identitas Pribadi</h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+                        <div class="form-group has-feedback">
+                            <label for="nama" class="col-sm-2 control-label">Nama</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="nama" class="form-control" id="nama" placeholder="Nama lengkap" required="" maxlength="50" value="{% if dummyuser %}Thami Rusdi Agus{% endif %}" pattern=".{3,50}"/>
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="alamat" class="col-sm-2 control-label">Alamat</label>
+                            <div class="col-sm-10">
+                                <textarea name="alamat" id="alamat" cols="" rows="" class="form-control" required="" maxlength="250">{% if dummyuser %}Jl. Pada Elo RT. 2 No. 7{% endif %}</textarea>
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="kota" class="col-sm-2 control-label">Kota</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="kota" class="form-control" id="kota" placeholder="Kota" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Samarinda{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="provinsi" class="col-sm-2 control-label">Provinsi</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="provinsi" class="form-control" id="provinsi" placeholder="Provinsi" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Kalimantan Timur{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div id="group-identitas" class="form-group has-feedback">
+                            <label for="identitas" class="col-sm-2 control-label">No. Identitas</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="identitas" class="form-control" id="identitas" placeholder="Nomor identitas KTP/SIM" required="" maxlength="20" value="{% if dummyuser %}6472051908850006{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                                <span id="error-identitas" class="label label-danger" style="display: none;"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Jenis Kelamin</label>
+                            <div class="col-sm-10">
+                                <div class="radio-inline">
+                                    <label>
+                                        <input id="jenkel-l" name="jenkel" value="L" type="radio" required=""{% if dummyuser %} checked=""{% endif %}> Laki-laki
+                                    </label>
+                                </div>
+                                <div class="radio-inline">
+                                    <label>
+                                        <input id="jenkel-p" name="jenkel" value="P" type="radio" required=""> Perempuan
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Agama</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="pilih-agama" required="">
+                                    <option value="0"{% if not dummyuser %} selected=""{% endif %}>---</option>
+                                    {% for agama in db_agama %}
+                                    <option value="{{ agama.id }}"{% if forloop.first %} selected=""{% endif %}>{{ agama.nama }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="tempat-lahir" class="col-sm-2 control-label">Tempat Lahir</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="tempat-lahir" class="form-control" id="tempat-lahir" placeholder="Tempat lahir" required="" maxlength="20" value="{% if dummyuser %}Samarinda{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="tgl-lahir" class="col-sm-2 control-label">Tanggal Lahir</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="tgl-lahir" class="form-control" id="tgl-lahir" placeholder="yyyy-mm-dd" required="" value="{% if dummyuser %}1985-08-19{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Golongan Darah</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="pilih-goldar" name="golongan-darah">
+                                    <option value="0">Tidak tahu</option>
+                                    <option value="1">A</option>
+                                    <option value="2">AB</option>
+                                    <option value="3">AB-</option>
+                                    <option value="4">AB+</option>
+                                    <option value="5"{% if dummyuser %} selected=""{% endif %}>O</option>
+                                    <option value="6">Lainnya</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nomor-telp" class="col-sm-2 control-label">No. Telp.</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="nomor-telp" class="form-control" id="nomor-telp" placeholder="Nomor telepon (rumah/kantor)" maxlength="15" value="{% if dummyuser %}0541-7270021{% endif %}">
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="nomor-hp" class="col-sm-2 control-label">No. HP.</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="nomor-hp" class="form-control" id="nomor-hp" placeholder="Nomor handphone" required="" maxlength="15" value="{% if dummyuser %}085347892345{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div id="group-email" class="form-group">
+                            <label for="email" class="col-sm-2 control-label">E-mail</label>
+                            <div class="col-sm-10">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">@</span>
+                                    <input type="email" name="email" id="email" class="form-control" placeholder="Alamat e-mail" value="{% if dummyuser %}trusdi.agus@gmail.com{% endif %}">
+                                    <span class="nop padding-only"></span>
+                                    <span id="error-email" class="label label-danger" style="display: none;"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="text-right signinfo-right">
+                                <small>Kolom isian yang wajib anda isi</small> <i class="glyphicon glyphicon-info-sign"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- ## -->
+                    <div class="panel-heading">
+                        <h3 class="panel-title" id="data-wali">Data Orang Tua / Wali</h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+
+                        <div class="form-group has-feedback">
+                            <label for="ortu-nama-ayah" class="col-sm-2 control-label">Nama Ayah</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="ortu-nama-ayah" class="form-control" id="ortu-nama-ayah" placeholder="Nama Ayah" required="" maxlength="50" value="{% if dummyuser %}M. Thamrin{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="ortu-nama-ibu" class="col-sm-2 control-label">Nama Ibu</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="ortu-nama-ibu" class="form-control" id="ortu-nama-ibu" placeholder="Nama Ibu" required="" maxlength="50" value="{% if dummyuser %}Rosita{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ortu-nama-wali" class="col-sm-2 control-label">Nama Wali</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="ortu-nama-wali" class="form-control" id="ortu-nama-wali" placeholder="Nama Wali" maxlength="50" value="{% if dummyuser %}M. Syafe'i{% endif %}">
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="ortu-alamat" class="col-sm-2 control-label">Alamat</label>
+                            <div class="col-sm-10">
+                                <textarea name="ortu-alamat" id="ortu-alamat" cols="" rows="" class="form-control" required="" maxlength="250">{% if dummyuser %}Jl. A. Azis Samad{% endif %}</textarea>
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="ortu-pekerjaan" class="col-sm-2 control-label">Pekerjaan</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="ortu-pekerjaan" class="form-control" id="ortu-pekerjaan" placeholder="Pekerjaan" maxlength="20" value="{% if dummyuser %}Wiraswasta{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="ortu-telepon" class="col-sm-2 control-label">Telepon</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="ortu-telepon" class="form-control" id="ortu-telepon" placeholder="Telepon / handphone" maxlength="15" value="{% if dummyuser %}081347892345{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ortu-email" class="col-sm-2 control-label">E-mail</label>
+                            <div class="col-sm-10">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">@</span>
+                                    <input type="email" name="ortu-email" class="form-control" id="ortu-email" placeholder="Alamat e-mail orang tua/wali" value="{% if dummyuser %}coba@aja.com{% endif %}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="text-right signinfo-right">
+                                <small>Kolom isian yang wajib anda isi</small> <i class="glyphicon glyphicon-info-sign"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- ## -->
+                    <div class="panel-heading">
+                        <h3 class="panel-title" id="data-pendidikan">Data Pendidikan Terakhir</h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Pendidikan Akhir</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="pend-akhir" required="">
+                                    <option value="0">---</option>
+                                    <option value="smu">Sekolah Menengah Umum (SMU)</option>
+                                    <option value="smk"{% if dummyuser %} selected=""{% endif %}>Sekolah Menengah Kejuruan (SMK)</option>
+                                    <option value="ma">Madrasah Aliyah (MA)</option>
+                                    <option value="etc">Lainnya</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="pend-nama-sekolah" class="col-sm-2 control-label">Nama Sekolah</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pend-nama-sekolah" class="form-control" id="pend-nama-sekolah" placeholder="Nama sekolah" required="" maxlength="50" value="{% if dummyuser %}SMK-TI Airlangga Samarinda{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="pend-alamat" class="col-sm-2 control-label">Alamat Sekolah</label>
+                            <div class="col-sm-10">
+                                <textarea name="pend-alamat" id="pend-alamat" cols="" rows="" class="form-control" required="" maxlength="250">{% if dummyuser %}Jl. Pahlawan No. 2A{% endif %}</textarea>
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="pend-kota-sekolah" class="col-sm-2 control-label">Kota</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pend-kota-sekolah" class="form-control" id="pend-kota-sekolah" placeholder="Kota" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Samarinda{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="pend-prov-sekolah" class="col-sm-2 control-label">Provinsi</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pend-prov-sekolah" class="form-control" id="pend-prov-sekolah" placeholder="Provinsi" required="" autocomplete="off" maxlength="30" value="{% if dummyuser %}Kalimantan Timur{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="pend-jurusan" class="col-sm-2 control-label">Jurusan</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pend-jurusan" class="form-control" id="pend-jurusan" placeholder="Jurusan" required="" maxlength="50" value="{% if dummyuser %}Teknik Informatika{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <label for="pend-tahun-lulus" class="col-sm-2 control-label">Tahun Lulus</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pend-tahun-lulus" class="form-control" id="pend-tahun-lulus" placeholder="Tahun kelulusan" required="" maxlength="4" value="{% if dummyuser %}2004{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                            </div>
+                        </div>
+
+                        <div id="group-ijazah" class="form-group has-feedback">
+                            <label for="ijazah" class="col-sm-2 control-label">No. Ijazah</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="pend-no-ijazah" class="form-control" id="ijazah" placeholder="Nomor ijazah" required="" maxlength="50" value="{% if dummyuser %}6472051908850006{% endif %}">
+                                <span class="glyphicon glyphicon-info-sign form-control-feedback" title="Wajib diisi!"></span>
+                                <span id="error-ijazah" class="label label-danger" style="display: none;"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="text-right signinfo-right">
+                                <small>Kolom isian yang wajib anda isi</small> <i class="glyphicon glyphicon-info-sign"></i>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <!-- ## -->
+                    <div class="panel-heading">
+                        <h3 class="panel-title" id="rencana-studi">Rencana Kuliah</h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Jenjang Studi</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="rencana-jenjang" id="rencana-jenjang" required="">
+                                    <option value="0" selected>---</option>
+                                    {% for jenjang in db_jenjang %}
+                                    <option value="{{ jenjang.id }}">{{ jenjang.nama }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Program Studi</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="rencana-prodi" name="rencana-prodi" required="" disabled>
+                                    <option value="0" selected>---</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Kelas</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="rencana-kelas" name="rencana-kelas" required="" disabled>
+                                    <option value="0" selected>---</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ## -->
+                    <div class="panel-heading">
+                        <h3 class="panel-title" id="daftarkan">Persetujuan dan Informasi</h3>
+                    </div>
+                    <div class="panel-body form-horizontal">
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-0 col-sm-12">
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="checkbox-setuju" id="checkbox-setuju" type="checkbox"{% if dummyuser %} checked=""{% endif %}>
+                                        Saya menyatakan bahwa informasi yang saya berikan benar dan sesuai.
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-footer" style="overflow:hidden; text-align:right;">
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-success btn-sm">Daftar</button>
+                                <button type="reset" class="btn btn-default btn-sm">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endblock %}

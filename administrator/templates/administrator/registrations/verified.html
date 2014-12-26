@@ -1,0 +1,115 @@
+    {% extends 'administrator/base.html' %}
+
+    {% block title %}Terverifikasi{% endblock %}
+    {% block nav_reg_active %} active{% endblock %}
+    {% block nav_left_reg_verified %} active{% endblock %}
+
+    {% block extra_headers %}
+    <script>
+		$(document).ready(function() {
+			var objDataTable = $('#dataTables-registrant').dataTable({
+				'ajax': '{% url "adm_json" "reg_verified" %}',
+				'order': [[ 5, 'desc' ]],
+				'columnDefs': [
+				    { className: "text-center", "targets": [1, 3, 4, 5, 6] },
+                    { 'targets': [0], 'visible': false, 'searchable': false },
+                    {
+                        'render': function ( data, type, row ) {
+                            return '<button do-action="unverify" type="button" class="btn btn-warning btn-circle" title="Hapus verifikasi"><i class="fa fa-times"></i></button>';
+                        },
+                        'targets': 1
+                    }
+                ],
+                'fnInitComplete': function(oSettings, json) {
+                    var e = $('#dataTables-registrant tr').find('button[do-action="unverify"]'); // cari elements berdasarkan custom attribut
+                    $(e).each(function(i, el) {
+                        $(el).on('click', function() {
+                            var parentRow = $(el).parents('tr')[0];
+                            var curRow = objDataTable.fnGetPosition(parentRow);
+                            var dataId = objDataTable.fnGetData(curRow)[0];
+                            var error = true;
+                            var message = '';
+
+                            var url = '{% url "adm_beranda" %}' + 'ajax/reg_unverify/' + dataId + '/';
+                            $.ajax({
+                                url: url,
+                                dataType: 'json',
+                                async: false,
+                                success: function(response) {
+                                    error = response.error;
+                                    message = response.message;
+                                }
+                            });
+
+                            if(error) {
+                                alert(message);
+                            } else {
+                                objDataTable.api().row(parentRow).remove().draw();
+                                updatePaymentCounts('{% url "adm_beranda" %}' + 'json/data_count.json');
+                            }
+                        });
+                    });
+                }
+
+			});
+
+			$('#dataTables-registrant tbody').on('dblclick', 'tr', function() {
+			    var curRow = objDataTable.fnGetPosition(this);
+                var dataId = objDataTable.fnGetData(curRow)[0];
+
+                alert('Hello :D ' + $(':first-child', this).text() + ' ' + dataId);
+            });
+		});
+	</script>
+    {% endblock %}
+
+    {% block main_content %}
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Pendaftar: <span style="color: green;">Telah Diverifikasi</span></h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Klik <strong>dua kali</strong> pada baris yang akan diubah.
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover" id="dataTables-registrant">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Aksi</th>
+                                        <th>Nama</th>
+                                        <th>Kode</th>
+                                        <th>Jenjang</th>
+                                        <th>Program Studi</th>
+                                        <th>Kelas</th>
+                                        <th>Waktu Daftar</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.panel-body -->
+                    <div class="panel-footer">
+                        <p>Keterangan tombol aksi:</p>
+                        <p><button type="button" class="btn btn-warning btn-circle" title="Hapus konfirmasi"><i class="fa fa-times"></i></button>
+                            Menjadikan status sebagai <b>belum terverifikasi</b></p>
+                    </div>
+                </div>
+                <!-- /.panel -->
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /#page-wrapper -->
+    {% endblock%}
