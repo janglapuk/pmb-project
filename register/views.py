@@ -249,20 +249,20 @@ def verify(request):
         return render(request, 'register/verify.html', resp)
 
     elif request.method == 'POST':
-        resp = {'found': False, 'pembayaran': False}
+        resp['found'] = False
+        resp['pembayaran'] = False
 
         kv = request.POST.get('kv')
 
         verifikasi = Verifikasi.objects.filter(kode_verifikasi__contains=str(kv).lower())
-        if verifikasi is not None:
+        if verifikasi.exists():
             verifikasi = verifikasi[0]
 
             resp['found'] = True
 
             pembayaran = Pembayaran.objects.filter(pendaftar=verifikasi)
-            if pembayaran is not None:
+            if pembayaran.exists():
                 pembayaran = pembayaran[0]
-
                 pemb_status = pembayaran.status
 
                 resp['pembayaran'] = True
