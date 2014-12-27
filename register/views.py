@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -82,7 +82,6 @@ def pmb_submit(request):
             pend_tahun_lulus = request.POST.get('pend-tahun-lulus')
             pend_no_ijazah = request.POST.get('pend-no-ijazah')
 
-            #rencana_jenjang = request.POST.get('rencana-jenjang')
             rencana_prodi = request.POST.get('rencana-prodi')
             rencana_kelas = request.POST.get('rencana-kelas')
 
@@ -119,7 +118,15 @@ def pmb_submit(request):
 
 
 def pmb_success(request, kv):
-    return render(request, 'register/pmb_success.html', {'kv': kv})
+    resp = {}
+
+    if request.user.is_authenticated():
+        resp['username'] = request.user.username
+        resp['authed'] = True
+
+    resp['kv'] = kv
+
+    return render(request, 'register/pmb_success.html', resp)
 
 def pmb_json(request, data_key, data_id):
     data = {'error': True, 'message': 'Tidak dapat memproses data atau data tidak tersedia.'}
@@ -195,7 +202,6 @@ def pmb_json(request, data_key, data_id):
 
 def user_login(request):
     resp = {}
-    username = password = ''
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -205,9 +211,6 @@ def user_login(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                resp['authed'] = True
-                resp['username'] = user
-                resp['login_error'] = False
                 return HttpResponseRedirect(reverse('reg_beranda'))
             else:
                 resp['authed'] = False
@@ -236,8 +239,14 @@ def user_logout(request):
 
 
 def verify(request):
+    resp = {}
+
+    if request.user.is_authenticated():
+        resp['username'] = request.user.username
+        resp['authed'] = True
+
     if request.method == 'GET':
-        return render(request, 'register/verify.html', {})
+        return render(request, 'register/verify.html', resp)
 
     elif request.method == 'POST':
         resp = {'found': False, 'pembayaran': False}
@@ -277,6 +286,10 @@ def verify(request):
 def confirm(request):
     resp = {}
 
+    if request.user.is_authenticated():
+        resp['username'] = request.user.username
+        resp['authed'] = True
+
     if request.method == 'GET':
         banks = Pengaturan.objects.filter(kategori='BANK')
         resp['banks'] = banks
@@ -299,7 +312,11 @@ def confirm(request):
 
 
 def confirm_submit(request, key_id):
-    print request.POST
+    resp = {}
+
+    if request.user.is_authenticated():
+        resp['username'] = request.user.username
+        resp['authed'] = True
 
     if request.method == 'POST':
         try:
@@ -366,7 +383,13 @@ def confirm_submit(request, key_id):
             print('Exception: ' + e.message)
             return HttpResponseRedirect(reverse('reg_confirm') + '?error=1&msg=' + e.message)
 
-    return render(request, 'register/confirm.html', {})
+    return render(request, 'register/confirm.html', resp)
 
 def confirm_success(request):
-    return render(request, 'register/confirm_success.html', {})
+    resp = {}
+
+    if request.user.is_authenticated():
+        resp['username'] = request.user.username
+        resp['authed'] = True
+
+    return render(request, 'register/confirm_success.html', resp)
