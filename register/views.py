@@ -173,12 +173,12 @@ def pmb_json(request, data_key, data_id):
                     data['message'] = 'Nomor ijazah "' + str(data_id) + '" sudah ada dalam database.'
 
             elif data_key == 'check_kv':
-                data['error'] = not (Verifikasi.objects.filter(kode_verifikasi__contains=str(data_id)).count() > 0)
+                data['error'] = not (Verifikasi.objects.filter(kode_verifikasi__contains=str(data_id).lower()).count() > 0)
                 if data['error']:
                     data['message'] = 'Kode verifikasi "' + str(data_id) + '" tidak ada dalam database.'
 
             elif data_key == 'check_kv_reg':
-                data['error'] = Pembayaran.objects.filter(pendaftar__kode_verifikasi__contains=str(data_id)).count() > 0
+                data['error'] = Pembayaran.objects.filter(pendaftar__kode_verifikasi__contains=str(data_id).lower()).count() > 0
                 if data['error']:
                     data['message'] = 'Kode verifikasi "' + str(data_id) + '" sudah ada dalam database.'
 
