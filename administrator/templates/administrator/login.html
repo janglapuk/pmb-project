@@ -46,15 +46,15 @@
                             {% csrf_token %}
 							<fieldset>
 								<div class="form-group">
-									<input class="form-control" placeholder="Username" name="username" type="text" required="" value="{{ username }}" {% if not login_error %}autofocus{% endif %}>
+									<input class="form-control" placeholder="Username" name="username" type="text" required="" value="demo" autofocus>
 								</div>
 								<div class="form-group">
-									<input class="form-control" placeholder="Password" name="password" type="password" value="" required="" {% if login_error %}autofocus{% endif %}>
+									<input class="form-control" placeholder="Password" name="password" type="password" value="demo123" required="" autofocus>
 								</div>
 
                                 {% if login_error %}
                                 <div class="alert alert-danger">
-                                Ups! Username/password tidak cocok.
+                                	Ups! Username/password tidak cocok.
                                 </div>
                                 {% endif %}
 								<button type="submit" class="btn btn-lg btn-success btn-block">Login</button>
