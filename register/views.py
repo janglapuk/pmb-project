@@ -244,7 +244,7 @@ def verify(request):
 
         kv = request.POST.get('kv')
 
-        verifikasi = Verifikasi.objects.filter(kode_verifikasi__contains=kv)
+        verifikasi = Verifikasi.objects.filter(kode_verifikasi__contains=str(kv).lower())
         if verifikasi is not None:
             verifikasi = verifikasi[0]
 
@@ -312,7 +312,7 @@ def confirm_submit(request, key_id):
                 cabang = request.POST.get('cabang')
                 nominal = request.POST.get('nominal')
 
-                obj_sp = Verifikasi.objects.filter(kode_verifikasi__contains=kv)[0]
+                obj_sp = Verifikasi.objects.filter(kode_verifikasi__contains=str(kv).lower())[0]
                 obj_rektujuan = Pengaturan.objects.get(id=int(rektujuan))
 
                 pembayaran = Pembayaran(pendaftar=obj_sp,
@@ -340,10 +340,10 @@ def confirm_submit(request, key_id):
                 if ext != '.jpg' or ext != '.gif' or ext != '.png':
                     raise Exception('invalid_extension')
 
-                if Pembayaran.objects.filter(pendaftar__kode_verifikasi__contains=kv2.lower()).count() > 0:
+                if Pembayaran.objects.filter(pendaftar__kode_verifikasi__contains=str(kv2).lower()).count() > 0:
                     raise Exception('duplicate_data')
 
-                obj_sp = Verifikasi.objects.filter(kode_verifikasi__contains=kv2.lower())[0]
+                obj_sp = Verifikasi.objects.filter(kode_verifikasi__contains=str(kv2).lower())[0]
                 obj_rektujuan = Pengaturan.objects.get(id=int(rektujuan2))
 
                 form = PembayaranForm(request.POST, request.FILES)
